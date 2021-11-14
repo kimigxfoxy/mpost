@@ -35,8 +35,8 @@ fun detailPhoneNumber(navController: NavController) {
     var phoneNumberValue =remember { mutableStateOf("") }
     val maxChar = 9
     val context = LocalContext.current
-    var isError = remember { mutableStateOf(false) }
-
+    var isError = remember { mutableStateOf(true) }
+    var isErrorFirstInput=remember { mutableStateOf(false) }
     Column (
         modifier = Modifier.padding(
             top= 65.dp
@@ -83,6 +83,7 @@ fun detailPhoneNumber(navController: NavController) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 value = phoneNumberValue.value,
                 onValueChange = {
+                    isErrorFirstInput.value =true
                     if(it.length<=maxChar) {
                         phoneNumberValue.value = it
                     }
@@ -103,7 +104,7 @@ fun detailPhoneNumber(navController: NavController) {
                 singleLine = true
             )
         }
-        if (isError.value) {
+        if (isError.value && isErrorFirstInput.value) {
             Column  {
                 Text(
                     text = "Minimum of 9 characters required",
@@ -113,50 +114,52 @@ fun detailPhoneNumber(navController: NavController) {
                 )
             }
         }
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    bottom = 16.dp
-                ),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ){
-            Text(
-                text = "by clicking 'GET PIN' you have read and agreed with our",
+        if (!isError.value) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(
-                        start = 40.dp,
+                        bottom = 16.dp
                     ),
-                fontSize = 14.sp
-            )
-            Text(
-                text = "Terms and Conditions",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 130.dp,
-                        bottom = 10.dp
-                    ),
-                fontSize = 14.sp
-            )
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 20.dp,
-                        end = 20.dp,
-                    ),
-                onClick = {
-                    generateOTP("254"+phoneNumberValue.value,navController,context)
-                          },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = buttonPrimaryColor,
-                    contentColor = Color.White
-                )
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "GET PIN")
+                Text(
+                    text = "by clicking 'GET PIN' you have read and agreed with our",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 40.dp,
+                        ),
+                    fontSize = 14.sp
+                )
+                Text(
+                    text = "Terms and Conditions",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 130.dp,
+                            bottom = 10.dp
+                        ),
+                    fontSize = 14.sp
+                )
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 20.dp,
+                            end = 20.dp,
+                        ),
+                    onClick = {
+                        generateOTP("254" + phoneNumberValue.value, navController, context)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = buttonPrimaryColor,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "GET PIN")
+                }
             }
         }
     }
