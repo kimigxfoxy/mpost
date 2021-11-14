@@ -1,8 +1,11 @@
 package com.mpost.app
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.util.Log
+import android.widget.DatePicker
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +29,10 @@ import com.mpost.app.retrofit.APIInterface
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 @Composable
@@ -38,6 +45,23 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
     val languageOptions: List<String> = listOf("Male", "Female")
     var selectedGender=""
     val context = LocalContext.current
+    val mYear: Int
+    val mMonth: Int
+    val mDay: Int
+    val now = Calendar.getInstance()
+    mYear = now.get(Calendar.YEAR)
+    mMonth = now.get(Calendar.MONTH)
+    mDay = now.get(Calendar.DAY_OF_MONTH)
+    now.time = Date()
+    val date = remember { mutableStateOf("") }
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+            val cal = Calendar.getInstance()
+            cal.set(year, month, dayOfMonth)
+            date.value = getFormattedDate(cal.time, "dd MMM,yyy")
+        }, mYear, mMonth, mDay
+    )
 
     LazyColumn(
         modifier = Modifier
@@ -167,7 +191,7 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
             ) {
                 Column {
                     Text(
-                        text = "Preferred postal code",
+                        text = "Postal code",
                     )
                     OutlinedTextField(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -184,6 +208,44 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         singleLine = true
                     )
                 }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 10.dp,
+                        start = 24.dp,
+                        bottom = 5.dp,
+                        end = 24.dp,
+                    )
+            ) {
+                Column {
+                        Text(
+                            text = "Date of birth",
+                        )
+                        OutlinedTextField(
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.fillMaxWidth().clickable(
+                                onClick = {
+                                    datePickerDialog.show()
+                                }),
+                            value = date.value,
+                            readOnly = true,
+                            enabled = false,
+                            onValueChange = { date.value = it },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                backgroundColor = Color.White,
+                                focusedBorderColor = Color.DarkGray,
+                                unfocusedBorderColor = Color.DarkGray,
+                                textColor = Color.DarkGray
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            singleLine = true
+                        )
+                    }
             }
         }
         item {
@@ -259,7 +321,7 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                             "254",
                             emailAddress.value,
                             selectedGender,
-                            "2021-11-12T12:38:22.172Z",
+                            formatSubmitDateDate(date.value),
                             ""
                         ),
                         navController,context) },
@@ -310,6 +372,7 @@ fun saveSubscriber(subscriber: Subscriber,
                    context: Context
 ){
 
+    subscriber.dob?.let { Log.i("SubscriberDate: ", it) }
 
    val apiInterface = APIClient.client!!.create(APIInterface::class.java)
    val subscriberRequest= apiInterface.createSubscriber(subscriber)
@@ -328,4 +391,26 @@ fun saveSubscriber(subscriber: Subscriber,
             ).show()
         }
     })
+
+}
+
+fun getFormattedDate(date: Date?, format: String): String {
+    try {
+        if (date != null) {
+            val formatter = SimpleDateFormat(format, Locale.getDefault())
+            return formatter.format(date)
+        }
+    } catch (e: Exception) {
+
+    }
+    return ""
+}
+
+fun formatSubmitDateDate(date:String):String{
+    var sf= SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    return sf.format(
+        SimpleDateFormat("dd MMM,yyy")
+            .parse(date)
+    )
+
 }

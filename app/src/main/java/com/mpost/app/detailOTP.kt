@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +35,8 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
     var sixDigitCode = remember { mutableStateOf("") }
     val maxChar = 6
     val context = LocalContext.current
+    var isError = remember { mutableStateOf(true) }
+    var isErrorFirstInput=remember { mutableStateOf(false) }
 
     Column {
         Row (
@@ -61,7 +64,7 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
             )
             Column{
                 Text(
-                    text = "Code sent to 254 173xxxxxx",
+                    text = "Code sent to $mobileNumber",
                     modifier = Modifier.padding(
                         start= 10.dp,
                         top = 10.dp,
@@ -74,7 +77,9 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
                         start= 10.dp,
                         top = 5.dp,
                         bottom=10.dp
-                    ),
+                    ).clickable(
+                        onClick = {
+                            navController.navigate("enterPhoneNumber")                        }),
                     color = buttonPrimaryColor
                 )
             }
@@ -90,7 +95,11 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
                 value = sixDigitCode.value,
-                onValueChange = { if(it.length<=maxChar) sixDigitCode.value = it },
+                onValueChange = {
+                    isErrorFirstInput.value =true
+                    if(it.length<=maxChar) sixDigitCode.value = it
+                    isError.value = it.length < maxChar
+                },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color.White,
                     focusedBorderColor = Color.DarkGray,
@@ -101,48 +110,60 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
                 singleLine = true
             )
         }
-        Column(
-            modifier = Modifier.padding(
-                start= 24.dp,
-            ),
-        ){
-            Text(
-                modifier = Modifier.padding(
-                    top= 5.dp,
-                ),
-                text = "Resend code in 25s",
-                color = Color.DarkGray
-            )
-        }
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    bottom = 16.dp
-                ),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ){
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 20.dp,
-                        end = 20.dp,
-                    ),
-                onClick = {
-                    validateOTP(
-                        ValidateOtp(mobileNumber,sixDigitCode.value),
-                        navController,
-                        context
-                    )
-                },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = buttonPrimaryColor,
-                    contentColor = Color.White
+        if (isError.value && isErrorFirstInput.value) {
+            Column  {
+                Text(
+                    text = "Minimum of 6 characters required",
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier.padding(start = 24.dp)
                 )
+            }
+        }
+//        Column(
+//            modifier = Modifier.padding(
+//                start= 24.dp,
+//            ),
+//        ){
+//            Text(
+//                modifier = Modifier.padding(
+//                    top= 5.dp,
+//                ),
+//                text = "Resend code in 25s",
+//                color = Color.DarkGray
+//            )
+//        }
+        if (!isError.value) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        bottom = 16.dp
+                    ),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "GET PIN")
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 20.dp,
+                            end = 20.dp,
+                        ),
+                    onClick = {
+                        validateOTP(
+                            ValidateOtp(mobileNumber, sixDigitCode.value),
+                            navController,
+                            context
+                        )
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = buttonPrimaryColor,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(text = "GET PIN")
+                }
             }
         }
     }
@@ -161,13 +182,19 @@ fun validateOTP(validateOtp: ValidateOtp,
         ) {
             if (response.code()== 200) {
                 navController.navigate("enterPersonal/"+validateOtp.mobileNumber)
+            }else{
+                Toast.makeText(
+                    context,
+                    "OTP is expired or invalid",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
         override fun onFailure(call: Call<GenericResponse?>?, t: Throwable?) {
             Toast.makeText(
                 context,
-                "Network error or OTP invalid",
+                "Network error",
                 Toast.LENGTH_SHORT
             ).show()
         }
