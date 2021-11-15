@@ -63,6 +63,17 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
         }, mYear, mMonth, mDay
     )
 
+    var isErrorFirstName = remember { mutableStateOf(true) }
+    var isErrorFirstNameFirstInput=remember { mutableStateOf(false) }
+    var isErrorLastName = remember { mutableStateOf(true) }
+    var isErrorLastNameFirstInput=remember { mutableStateOf(false) }
+    var isErrorIdNumber = remember { mutableStateOf(true) }
+    var isErrorIdNumberFirstInput=remember { mutableStateOf(false) }
+    var isErrorDateOfBirth = remember { mutableStateOf(true) }
+    var isErrorDateOfBirthFirstInput=remember { mutableStateOf(false) }
+    var isErrorPostalCode = remember { mutableStateOf(true) }
+    var isErrorPostalCodeFirstInput=remember { mutableStateOf(false) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -101,7 +112,11 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         modifier = Modifier.fillMaxWidth(),
                         value = firstName.value,
-                        onValueChange = { firstName.value = it },
+                        onValueChange = {
+                            isErrorFirstNameFirstInput.value =true
+                            if(it.length<=3) firstName.value = it
+                            isErrorFirstName.value = it.length<3
+                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             backgroundColor = Color.White,
                             focusedBorderColor = Color.DarkGray,
@@ -111,6 +126,16 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         shape = RoundedCornerShape(8.dp),
                         singleLine = true
                     )
+
+                    if (isErrorFirstName.value && isErrorFirstNameFirstInput.value) {
+                        Column  {
+                            Text(
+                                text = "Minimum of 3 characters required",
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -133,7 +158,11 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         modifier = Modifier.fillMaxWidth(),
                         value = lastName.value,
-                        onValueChange = { lastName.value = it },
+                        onValueChange = {
+                            isErrorLastNameFirstInput.value =true
+                            if(it.length<=3) lastName.value = it
+                            isErrorLastName.value = it.length<3
+                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             backgroundColor = Color.White,
                             focusedBorderColor = Color.DarkGray,
@@ -143,6 +172,15 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         shape = RoundedCornerShape(8.dp),
                         singleLine = true
                     )
+                    if (isErrorLastName.value && isErrorLastNameFirstInput.value) {
+                        Column  {
+                            Text(
+                                text = "Minimum of 3 characters required",
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -165,7 +203,11 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
                         value = idNumber.value,
-                        onValueChange = { idNumber.value = it },
+                        onValueChange = {
+                            isErrorIdNumberFirstInput.value =true
+                            if(it.length<=8) idNumber.value = it
+                            isErrorIdNumber.value = it.length < 8
+                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             backgroundColor = Color.White,
                             focusedBorderColor = Color.DarkGray,
@@ -175,6 +217,15 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         shape = RoundedCornerShape(8.dp),
                         singleLine = true
                     )
+                    if (isErrorIdNumber.value && isErrorIdNumberFirstInput.value) {
+                        Column  {
+                            Text(
+                                text = "Minimum of 8 characters required",
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -197,7 +248,11 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         modifier = Modifier.fillMaxWidth(),
                         value = postalCode.value,
-                        onValueChange = { postalCode.value = it },
+                        onValueChange = {
+                            isErrorPostalCodeFirstInput.value =true
+                            if(it.length<=5)  postalCode.value = it
+                            isErrorPostalCode.value = it.length <5
+                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             backgroundColor = Color.White,
                             focusedBorderColor = Color.DarkGray,
@@ -207,6 +262,15 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         shape = RoundedCornerShape(8.dp),
                         singleLine = true
                     )
+                    if (isErrorPostalCode.value && isErrorPostalCodeFirstInput.value) {
+                        Column  {
+                            Text(
+                                text = "Minimum of 5 characters required",
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -230,7 +294,9 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth().clickable(
                                 onClick = {
+                                    isErrorDateOfBirthFirstInput.value =true
                                     datePickerDialog.show()
+                                    isErrorDateOfBirth.value = false
                                 }),
                             value = date.value,
                             readOnly = true,
@@ -245,6 +311,15 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                             shape = RoundedCornerShape(8.dp),
                             singleLine = true
                         )
+                    if (isErrorDateOfBirth.value) {
+                        Column  {
+                            Text(
+                                text = "Date of birth required",
+                                color = MaterialTheme.colors.error,
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
+                    }
                     }
             }
         }
@@ -296,41 +371,51 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                 )
             }
         }
-        item {
-            Column(
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(
-                        bottom = 10.dp,
-                    ),
-            ) {
-                Button(
+        if (!isErrorFirstName.value
+            && !isErrorLastName.value
+            && !isErrorIdNumber.value
+            && !isErrorPostalCode.value
+            && !isErrorDateOfBirth.value
+        ) {
+            item {
+                Column(
+                    verticalArrangement = Arrangement.Bottom,
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(
-                            start = 20.dp,
-                            end = 20.dp,
+                            bottom = 10.dp,
                         ),
-                    onClick = { saveSubscriber(
-                        subscriber = Subscriber(
-                            idNumber.value,
-                            firstName.value+" "+lastName.value,
-                            mobileNumber,
-                            postalCode.value,
-                            "254",
-                            emailAddress.value,
-                            selectedGender,
-                            formatSubmitDateDate(date.value),
-                            ""
-                        ),
-                        navController,context) },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = buttonPrimaryColor,
-                        contentColor = Color.White
-                    )
                 ) {
-                    Text(text = "SUBMIT")
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 20.dp,
+                                end = 20.dp,
+                            ),
+                        onClick = {
+                            saveSubscriber(
+                                subscriber = Subscriber(
+                                    idNumber.value,
+                                    firstName.value + " " + lastName.value,
+                                    mobileNumber,
+                                    postalCode.value,
+                                    "254",
+                                    emailAddress.value,
+                                    selectedGender,
+                                    formatSubmitDateDate(date.value),
+                                    ""
+                                ),
+                                navController, context
+                            )
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = buttonPrimaryColor,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(text = "SUBMIT")
+                    }
                 }
             }
         }
@@ -376,21 +461,21 @@ fun saveSubscriber(subscriber: Subscriber,
 
    val apiInterface = APIClient.client!!.create(APIInterface::class.java)
    val subscriberRequest= apiInterface.createSubscriber(subscriber)
-    val response=subscriberRequest?.enqueue(object : Callback<GenericResponse?> {
-        override fun onResponse(call: Call<GenericResponse?>?, response: Response<GenericResponse?>) {
-            if (response.code() == 200) {
-                navController.navigate("finishRegistration")
-            }
-        }
-
-        override fun onFailure(call: Call<GenericResponse?>?, t: Throwable?) {
-            Toast.makeText(
-                context,
-                "Network or phone number error",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    })
+//    val response=subscriberRequest?.enqueue(object : Callback<GenericResponse?> {
+//        override fun onResponse(call: Call<GenericResponse?>?, response: Response<GenericResponse?>) {
+//            if (response.code() == 200) {
+                navController.navigate("finishRegistration/"+subscriber.mobileNumber)
+//            }
+//        }
+//
+//        override fun onFailure(call: Call<GenericResponse?>?, t: Throwable?) {
+//            Toast.makeText(
+//                context,
+//                "Network or phone number error",
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        }
+//    })
 
 }
 

@@ -82,24 +82,36 @@ fun NavigationComponent(navController: NavHostController) {
         composable(
             "enterOTP/{mobileNumber}",
             arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
-        ) {
-            backStackEntry ->
+        ) { backStackEntry ->
             backStackEntry.arguments?.getString("mobileNumber")?.let {
-                detailOTP(navController,
+                detailOTP(
+                    navController,
                     it
                 )
             }
-
         }
 
         composable(
             "enterPersonal/{mobileNumber}",
             arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
         ) { backStackEntry ->
-            backStackEntry.arguments?.getString("mobileNumber")?.let { detailPersonal(navController, it) }
+            backStackEntry.arguments?.getString("mobileNumber")
+                ?.let { detailPersonal(navController, it) }
         }
-        composable("finishRegistration") {
-            finishRegistration(navController)
+
+        composable("finishRegistration/{mobileNumber}",
+            arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("mobileNumber")
+                ?.let { finishRegistration(navController, it) }
+        }
+
+        composable("activateRegistration/{mobileNumber}",
+            arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("mobileNumber")?.let {
+                activateRegistration(navController, it)
+            }
         }
     }
 }

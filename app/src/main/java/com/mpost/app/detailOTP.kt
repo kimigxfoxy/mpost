@@ -162,7 +162,7 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "GET PIN")
+                    Text(text = "SUBMIT")
                 }
             }
         }
