@@ -114,7 +114,7 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         value = firstName.value,
                         onValueChange = {
                             isErrorFirstNameFirstInput.value =true
-                            if(it.length<=3) firstName.value = it
+                             firstName.value = it
                             isErrorFirstName.value = it.length<3
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -160,7 +160,7 @@ fun detailPersonal(navController: NavController,mobileNumber:String) {
                         value = lastName.value,
                         onValueChange = {
                             isErrorLastNameFirstInput.value =true
-                            if(it.length<=3) lastName.value = it
+                             lastName.value = it
                             isErrorLastName.value = it.length<3
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -457,25 +457,23 @@ fun saveSubscriber(subscriber: Subscriber,
                    context: Context
 ){
 
-    subscriber.dob?.let { Log.i("SubscriberDate: ", it) }
-
    val apiInterface = APIClient.client!!.create(APIInterface::class.java)
    val subscriberRequest= apiInterface.createSubscriber(subscriber)
-//    val response=subscriberRequest?.enqueue(object : Callback<GenericResponse?> {
-//        override fun onResponse(call: Call<GenericResponse?>?, response: Response<GenericResponse?>) {
-//            if (response.code() == 200) {
+    val response=subscriberRequest?.enqueue(object : Callback<GenericResponse?> {
+        override fun onResponse(call: Call<GenericResponse?>?, response: Response<GenericResponse?>) {
+            if (response.code() == 200) {
                 navController.navigate("finishRegistration/"+subscriber.mobileNumber)
-//            }
-//        }
-//
-//        override fun onFailure(call: Call<GenericResponse?>?, t: Throwable?) {
-//            Toast.makeText(
-//                context,
-//                "Network or phone number error",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-//    })
+            }
+        }
+
+        override fun onFailure(call: Call<GenericResponse?>?, t: Throwable?) {
+            Toast.makeText(
+                context,
+                "Network or phone number error",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    })
 
 }
 
