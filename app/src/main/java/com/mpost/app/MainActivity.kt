@@ -75,6 +75,7 @@ fun NavigationComponent(navController: NavHostController) {
     ) {
         composable("home") {
             homeScreen(navController)
+
         }
         composable("enterPhoneNumber") {
             detailPhoneNumber(navController)
@@ -112,6 +113,42 @@ fun NavigationComponent(navController: NavHostController) {
             backStackEntry.arguments?.getString("mobileNumber")?.let {
                 activateRegistration(navController, it)
             }
+        }
+
+        composable("profile/{names}/{mobileNumber}/{city}/{area}/{postalCode}/{expiryDate}/{isPaid}/{isExpired}",
+            arguments = listOf(
+                navArgument("names") { type = NavType.StringType },
+                navArgument("mobileNumber") { type = NavType.StringType },
+                navArgument("city") { type = NavType.StringType },
+                navArgument("area") { type = NavType.StringType },
+                navArgument("postalCode") { type = NavType.StringType },
+                navArgument("expiryDate") { type = NavType.StringType },
+                navArgument("isPaid") { type = NavType.StringType },
+                navArgument("isExpired") { type = NavType.StringType },
+
+            )
+        ) { backStackEntry ->
+            val names=backStackEntry.arguments?.getString("names")
+            val mobileNumber=backStackEntry.arguments?.getString("mobileNumber")
+            val city=backStackEntry.arguments?.getString("city")
+            val area=backStackEntry.arguments?.getString("area")
+            val postalCode=backStackEntry.arguments?.getString("postalCode")
+            val expiryDate=backStackEntry.arguments?.getString("expiryDate")
+            val isPaid=backStackEntry.arguments?.getString("isPaid")
+            val isExpired=backStackEntry.arguments?.getString("isExpired")
+
+            profilePage(
+                navController,
+                names!!,
+                mobileNumber!!,
+                city!!,
+                area!!,
+                postalCode!!,
+                expiryDate!!,
+                isPaid!!,
+                isExpired!!,
+            )
+
         }
     }
 }
