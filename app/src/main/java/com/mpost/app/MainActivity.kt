@@ -74,7 +74,8 @@ fun NavigationComponent(navController: NavHostController) {
         startDestination = "home"
     ) {
         composable("home") {
-            homeScreen(navController)
+//            homeScreen(navController)
+            paymentInitiated(navController,"254713844953")
 
         }
         composable("enterPhoneNumber") {
@@ -112,6 +113,14 @@ fun NavigationComponent(navController: NavHostController) {
         ) { backStackEntry ->
             backStackEntry.arguments?.getString("mobileNumber")?.let {
                 activateRegistration(navController, it)
+            }
+        }
+
+        composable("paymentInitiated/{mobileNumber}",
+            arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("mobileNumber")?.let {
+                paymentInitiated(navController, it)
             }
         }
 

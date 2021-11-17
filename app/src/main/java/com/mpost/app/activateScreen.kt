@@ -1,5 +1,7 @@
 package com.mpost.app
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,16 +13,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.mpost.app.retrofit.APIClient
+import com.mpost.app.retrofit.APIInterface
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
 fun activateRegistration(navController: NavController, mobileNumber:String) {
     var buttonPrimaryColor= Color(android.graphics.Color.parseColor("#1774A7"))
     var buttonPrimaryColor2= Color(android.graphics.Color.parseColor("#D9EEFA"))
+    val context = LocalContext.current
 
     Column {
         Row (
@@ -149,7 +158,10 @@ fun activateRegistration(navController: NavController, mobileNumber:String) {
                                 end = 20.dp,
                             ),
                         onClick = {
-
+                            activateAccount(mobileNumber,
+                                navController,
+                                context
+                            )
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = com.mpost.app.buttonPrimaryColor,
@@ -163,4 +175,38 @@ fun activateRegistration(navController: NavController, mobileNumber:String) {
 
         )
     }
+}
+
+
+fun activateAccount(mobileNumber: String,
+                    navController: NavController,
+                    context: Context
+) {
+    val apiInterface = APIClient.client!!.create(APIInterface::class.java)
+    val subscriberRequest = apiInterface.activateAccount(mobileNumber)
+    val response = subscriberRequest?.enqueue(object : Callback<String?> {
+        override fun onResponse(
+            call: Call<String?>?,
+            response: Response<String?>
+        ) {
+            if (response.code()== 200) {
+                navController.navigate("paymentInitiated/" + mobileNumber)
+
+            }else{
+                Toast.makeText(
+                    context,
+                    "OTP is expired or invalid",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        override fun onFailure(call: Call<String?>?, t: Throwable?) {
+            Toast.makeText(
+                context,
+                "Network error",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    })
 }

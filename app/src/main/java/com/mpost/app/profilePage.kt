@@ -40,9 +40,9 @@ fun profilePage(
     val sdf = SimpleDateFormat("dd-mm-yyyy")
     val currentDate = sdf.format(Date())
 
-    var active=false
+    var active="Not Active"
     if(isExpired=="false" && isPaid=="true"){
-        active=true
+        active="Active"
     }
 
 
@@ -125,7 +125,7 @@ fun profilePage(
                                 modifier = Modifier.weight(1f).padding(start = 20.dp)
                             ) {
                                 Text("Box status", color = Color.Gray)
-                                Text(active.toString(), fontWeight = FontWeight.W700)
+                                Text(active, fontWeight = FontWeight.W700)
                             }
                         }
 

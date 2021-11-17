@@ -28,4 +28,7 @@ internal interface APIInterface {
     @GET("https://apistaging.mpost-app.com/Subscribers/GetSubscriberDetails/{mobileNumber}")
     fun getSubscriberDetails(@Path ("mobileNumber") mobileNumber:String) : Call<SubscriberDetails?>?
 
+    @GET("https://apistaging.mpost-app.com/Subscribers/ActivateAccount/{mobileNumber}")
+    fun activateAccount(@Path ("mobileNumber") mobileNumber:String) : Call<String?>?
+
 }
