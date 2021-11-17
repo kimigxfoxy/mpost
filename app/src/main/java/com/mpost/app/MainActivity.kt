@@ -74,7 +74,9 @@ fun NavigationComponent(navController: NavHostController) {
         startDestination = "home"
     ) {
         composable("home") {
-            homeScreen(navController)
+//            homeScreen(navController)
+            paymentInitiated(navController,"254713844953")
+
         }
         composable("enterPhoneNumber") {
             detailPhoneNumber(navController)
@@ -82,24 +84,80 @@ fun NavigationComponent(navController: NavHostController) {
         composable(
             "enterOTP/{mobileNumber}",
             arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
-        ) {
-            backStackEntry ->
+        ) { backStackEntry ->
             backStackEntry.arguments?.getString("mobileNumber")?.let {
-                detailOTP(navController,
+                detailOTP(
+                    navController,
                     it
                 )
             }
-
         }
 
         composable(
             "enterPersonal/{mobileNumber}",
             arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
         ) { backStackEntry ->
-            backStackEntry.arguments?.getString("mobileNumber")?.let { detailPersonal(navController, it) }
+            backStackEntry.arguments?.getString("mobileNumber")
+                ?.let { detailPersonal(navController, it) }
         }
-        composable("finishRegistration") {
-            finishRegistration(navController)
+
+        composable("finishRegistration/{mobileNumber}",
+            arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("mobileNumber")
+                ?.let { finishRegistration(navController, it) }
+        }
+
+        composable("activateRegistration/{mobileNumber}",
+            arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("mobileNumber")?.let {
+                activateRegistration(navController, it)
+            }
+        }
+
+        composable("paymentInitiated/{mobileNumber}",
+            arguments = listOf(navArgument("mobileNumber") { type = NavType.StringType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.getString("mobileNumber")?.let {
+                paymentInitiated(navController, it)
+            }
+        }
+
+        composable("profile/{names}/{mobileNumber}/{city}/{area}/{postalCode}/{expiryDate}/{isPaid}/{isExpired}",
+            arguments = listOf(
+                navArgument("names") { type = NavType.StringType },
+                navArgument("mobileNumber") { type = NavType.StringType },
+                navArgument("city") { type = NavType.StringType },
+                navArgument("area") { type = NavType.StringType },
+                navArgument("postalCode") { type = NavType.StringType },
+                navArgument("expiryDate") { type = NavType.StringType },
+                navArgument("isPaid") { type = NavType.StringType },
+                navArgument("isExpired") { type = NavType.StringType },
+
+            )
+        ) { backStackEntry ->
+            val names=backStackEntry.arguments?.getString("names")
+            val mobileNumber=backStackEntry.arguments?.getString("mobileNumber")
+            val city=backStackEntry.arguments?.getString("city")
+            val area=backStackEntry.arguments?.getString("area")
+            val postalCode=backStackEntry.arguments?.getString("postalCode")
+            val expiryDate=backStackEntry.arguments?.getString("expiryDate")
+            val isPaid=backStackEntry.arguments?.getString("isPaid")
+            val isExpired=backStackEntry.arguments?.getString("isExpired")
+
+            profilePage(
+                navController,
+                names!!,
+                mobileNumber!!,
+                city!!,
+                area!!,
+                postalCode!!,
+                expiryDate!!,
+                isPaid!!,
+                isExpired!!,
+            )
+
         }
     }
 }

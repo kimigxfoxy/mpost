@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mpost.app.pojo.GenericResponse
+import com.mpost.app.pojo.SubscriberDetails
 import com.mpost.app.pojo.ValidateOtp
 import com.mpost.app.retrofit.APIClient
 import com.mpost.app.retrofit.APIInterface
@@ -162,7 +163,7 @@ fun detailOTP(navController: NavController,mobileNumber:String) {
                         contentColor = Color.White
                     )
                 ) {
-                    Text(text = "GET PIN")
+                    Text(text = "SUBMIT")
                 }
             }
         }
@@ -181,7 +182,7 @@ fun validateOTP(validateOtp: ValidateOtp,
             response: Response<GenericResponse?>
         ) {
             if (response.code()== 200) {
-                navController.navigate("enterPersonal/"+validateOtp.mobileNumber)
+                 getSubscriberDetails(validateOtp.mobileNumber.toString(),context,navController)
             }else{
                 Toast.makeText(
                     context,
@@ -192,6 +193,55 @@ fun validateOTP(validateOtp: ValidateOtp,
         }
 
         override fun onFailure(call: Call<GenericResponse?>?, t: Throwable?) {
+            Toast.makeText(
+                context,
+                "Network error",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    })
+}
+
+fun getSubscriberDetails(mobileNumber: String,context: Context,navController: NavController) {
+    val apiInterface = APIClient.client!!.create(APIInterface::class.java)
+    val subscriberRequest = apiInterface.getSubscriberDetails(mobileNumber)
+    val response = subscriberRequest?.enqueue(object : Callback<SubscriberDetails?> {
+        override fun onResponse(
+            call: Call<SubscriberDetails?>?,
+            response: Response<SubscriberDetails?>
+        ) {
+            Log.i("isExpired", response.body()?.isExpired.toString())
+            Log.i("isPaid", response.body()?.isPaid.toString())
+
+            if (response.code()== 200) {
+                val isExpired=response.body()?.isExpired.toString()
+                val isPaid=response.body()?.isPaid.toString()
+                val idNumber=response.body()?.idNumber.toString()
+                val city=response.body()?.city.toString()
+                val postalCode=response.body()?.postalCode.toString()
+                val expiryDate=response.body()?.expiry.toString()
+                val names=response.body()?.names.toString()
+
+                if(isExpired=="false" && isPaid=="true"){
+                    var route="profile/${names}/${mobileNumber}/${city}/${city}/${postalCode}/${expiryDate}/${isPaid}/${isExpired}"
+                    navController.navigate(route)
+                } else if(idNumber.isNotEmpty()){
+                    navController.navigate("activateRegistration/"+mobileNumber)
+                }
+                else{
+                    navController.navigate("enterPersonal/"+mobileNumber)
+                }
+            }else{
+                Toast.makeText(
+                    context,
+                    "Network error",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        }
+
+        override fun onFailure(call: Call<SubscriberDetails?>?, t: Throwable?) {
             Toast.makeText(
                 context,
                 "Network error",

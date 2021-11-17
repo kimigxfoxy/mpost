@@ -1,13 +1,8 @@
 package com.mpost.app.retrofit
 
-import com.mpost.app.pojo.GenericResponse
-import com.mpost.app.pojo.Subscriber
-import com.mpost.app.pojo.ValidateOtp
+import com.mpost.app.pojo.*
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 internal interface APIInterface {
 
@@ -19,5 +14,21 @@ internal interface APIInterface {
 
     @POST("Subscribers/CreateSubscribers")
     fun createSubscriber(@Body subscriber: Subscriber): Call<GenericResponse?>?
+
+    @GET("https://apistaging.mpost-app.com/staticdata/Cities/GetCitiesByName")
+    fun getCitiesByName(@Query("countrycode") countryCode:String,
+                        @Query("cityname") cityName: String):
+            Call<List<City>?>?
+
+    @GET("https://apistaging.mpost-app.com/staticdata/PostalOffices/GetPostalOfficesByArea")
+    fun getPostalCodeByCityCodeAndSearchParam(@Query("citycode") cityCode:String,
+                        @Query("areaname") areaName: String):
+            Call<List<AreaCode>?>?
+
+    @GET("https://apistaging.mpost-app.com/Subscribers/GetSubscriberDetails/{mobileNumber}")
+    fun getSubscriberDetails(@Path ("mobileNumber") mobileNumber:String) : Call<SubscriberDetails?>?
+
+    @GET("https://apistaging.mpost-app.com/Subscribers/ActivateAccount/{mobileNumber}")
+    fun activateAccount(@Path ("mobileNumber") mobileNumber:String) : Call<String?>?
 
 }
